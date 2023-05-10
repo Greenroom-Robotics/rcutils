@@ -1,3 +1,4 @@
+set(CMAKE_C_COMPILER musl-gcc)
 cmake_minimum_required(VERSION 3.12)
 
 project(rclue-rcutils)
@@ -13,9 +14,12 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-# use this header to force linking to a version of glibc that is compatible with Unreal Engine glibc
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_SOURCE_DIR}/include/rcutils/force_link_glibc_2.17.h")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include ${CMAKE_SOURCE_DIR}/include/rcutils/force_link_glibc_2.17.h")
+set(BUILD_TESTING off)
+
+set(CMAKE_C_FLAGS "-static")
+# set(CMAKE_EXE_LINKER_FLAGS "-static")
+# add_compile_options(-static)
+# add_compile_options(-static-libgcc -static-libstdc++)
 
 include(CheckLibraryExists)
 
@@ -131,6 +135,8 @@ target_include_directories(${REPLACE_PROJECT_NAME} PUBLIC
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(${REPLACE_PROJECT_NAME} PRIVATE "RCUTILS_BUILDING_DLL")
+
+# target_compile_options(${REPLACE_PROJECT_NAME} PRIVATE -static)
 
 if(BUILD_TESTING AND NOT RCUTILS_DISABLE_FAULT_INJECTION)
   target_compile_definitions(${REPLACE_PROJECT_NAME} PUBLIC RCUTILS_ENABLE_FAULT_INJECTION)
